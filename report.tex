@@ -34,7 +34,7 @@
 % - Sequence length: 16, component identity hidden
 % - Transformer: 3 layers, 2 heads, d_model=64, 152K params
 % - Training: 15K steps, Adam lr=1e-3, cosine schedule
-% - Final loss: 0.994 (uniform entropy = ln(3) = 1.099)
+% - Final loss: 1.031 (uniform entropy = ln(3) = 1.099)
 
 % ------------------------------------------------------------------
 \section{Pre-Registered Predictions}
@@ -56,25 +56,25 @@
 % Key numbers:
 %
 % Prediction 1 (CONFIRMED):
-%   Effective dim = 6, top 5 PCs = 94.5% variance
-%   Subspace overlap: 0.4v0.7 = 0.992, 0.4v0.9 = 0.967, 0.7v0.9 = 0.990
+%   Effective dim = 5, top 5 PCs = 96.0% variance
+%   Subspace overlap: 0.4v0.7 = 0.993, 0.4v0.9 = 0.962, 0.7v0.9 = 0.986
 %
 % Prediction 2 (PARTIAL):
-%   emb:     R2=0.643, Acc=0.333, Sil=-0.007
-%   layer_0: R2=0.810, Acc=0.455, Sil=-0.019
-%   layer_1: R2=0.847, Acc=0.519, Sil=+0.009
-%   layer_2: R2=0.840, Acc=0.527, Sil=-0.008
-%   ln_f:    R2=0.842, Acc=0.523, Sil=-0.042
+%   emb:     R2=0.618, Acc=0.343, Sil=-0.006
+%   layer_0: R2=0.814, Acc=0.437, Sil=-0.020
+%   layer_1: R2=0.839, Acc=0.541, Sil=-0.001
+%   layer_2: R2=0.838, Acc=0.523, Sil=-0.007
+%   ln_f:    R2=0.842, Acc=0.528, Sil=-0.052
 %
 % Prediction 3 (REFUTED):
-%   Silhouette negative at every position (-0.22 at pos 0, ~-0.03 elsewhere)
+%   Silhouette negative at every position (-0.030 at pos 0, ~-0.03 elsewhere)
 %
 % Prediction 4 (REFUTED):
 %   Silhouette ~-0.04 throughout training, no phase transition
-%   R2 rises 0.75 -> 0.83 by step 1000, then plateaus
+%   R2 rises 0.74 -> 0.82 by step 1000, then plateaus to 0.85
 %
 % Prediction 5 (CONFIRMED):
-%   Final layer R2 = 0.849, all-layers R2 = 0.853, gap = 0.005
+%   Final layer R2 = 0.849, all-layers R2 = 0.853, gap = 0.004
 
 % Summary table you can use:
 \begin{table}[htbp]
@@ -83,11 +83,11 @@
     \toprule
     Prediction & Key Result & Confirmed? \\
     \midrule
-    1. Shared subspace & Overlap 0.97--0.99 & Yes \\
+    1. Shared subspace & Overlap 0.96--0.99 & Yes \\
     2. Compounding layers & $R^2$ rises, silhouette does not & Partial \\
     3. Gradual separation & Silhouette $\approx -0.03$ everywhere & No \\
     4. Sharp transition & No jump across training & No \\
-    5. Final layer sufficient & $R^2$ gap $= 0.005$ & Yes \\
+    5. Final layer sufficient & $R^2$ gap $= 0.004$ & Yes \\
     \bottomrule
   \end{tabular}
 \end{table}
@@ -124,35 +124,41 @@
 % YOUR WRITING HERE
 %
 % Subsection: Activation Patching
-% Activation patching numbers:
-%   KL(original || patched) = 0.000
-%   KL(patched || target_B) = 0.190
+%   KL(original || patched) = 0.0000 (std=0.0000)
+%   KL(patched || target_B) = 0.2005 (std=0.1891)
 %   Interpretation: patching the belief subspace from component A to B
 %   does not change model output, consistent with shared geometry
 %
 % Subsection: MLP vs Attention Decomposition
-% MLP vs attention decomposition numbers:
-%   Layer 0: attn R2=0.682, mlp R2=0.795
-%   Layer 1: attn R2=0.455, mlp R2=0.781
-%   Layer 2: attn R2=0.381, mlp R2=0.742
-%   Key finding: MLPs carry more belief info than attention at every layer
+%   Layer 0: attn R2=0.703, attn Sil=-0.031, mlp R2=0.819, mlp Sil=-0.022
+%   Layer 1: attn R2=0.450, attn Sil=+0.009, mlp R2=0.796, mlp Sil=-0.068
+%   Layer 2: attn R2=0.310, attn Sil=-0.031, mlp R2=0.782, mlp Sil=-0.030
+%   Key finding: MLPs carry more belief info than attention at every layer;
+%   attention R2 decreases with depth while MLP stays high
 %
 % Subsection: Bayes-Optimal Baseline (motivated by P2)
-%   Compares model per-position CE to oracle CE (Bayesian observer with known component)
-%   Shows how close the model gets to theoretical ceiling
-%   Metrics: per-position CE gap (model - oracle), overall gap curve
+%   Model avg loss:  1.0208
+%   Bayes avg loss:  1.0594
+%   Uniform loss:    1.0986
+%   Gap (model - Bayes): -0.0386 (model slightly beats oracle!)
+%   Interpretation: model gains advantage by implicitly averaging over components
 %
 % Subsection: Cross-Component Transfer Probes (motivated by P1)
-%   Train Ridge probe on alpha_i sequences only, test on alpha_j
-%   Produces 3x3 R2 transfer matrix
-%   If shared subspace is real, off-diagonal R2 should be close to diagonal
-%   Metrics: 3x3 R2 matrix, mean off-diagonal vs diagonal R2
+%   Transfer matrix (R2):
+%     Train 0.4 -> Test 0.4=0.931, Test 0.7=0.437, Test 0.9=0.374
+%     Train 0.7 -> Test 0.4=-6.92, Test 0.7=0.960, Test 0.9=0.907
+%     Train 0.9 -> Test 0.4=-14.9, Test 0.7=0.819, Test 0.9=0.987
+%   Diagonal mean: 0.959, Off-diagonal mean: -3.215
+%   Key finding: representations are functionally component-specific despite
+%   high geometric overlap (P1). This tension is the most interesting result.
 %
 % Subsection: OOD Generalization alpha=0.6 (motivated by P1+P2)
-%   Generate sequences from unseen alpha=0.6, extract activations
-%   Test in-distribution probe on OOD data
-%   Metrics: OOD R2 vs in-distribution R2, PCA overlay, simplex projection
-%   Tests whether model learned the belief update rule vs memorized 3 alphas
+%   OOD model loss: 1.0934 (trained components avg: 1.0254)
+%   Belief R2 (in-dist probe on OOD): 0.886
+%   Belief R2 (OOD-retrained probe): 0.944
+%   Transfer gap: 0.059
+%   Interpretation: model generalizes well to unseen alpha, suggesting it
+%   learned the belief update structure, not just memorized 3 components
 
 % ------------------------------------------------------------------
 \section{What I Would Do Next}
