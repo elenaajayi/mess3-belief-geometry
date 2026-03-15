@@ -92,6 +92,32 @@
   \end{tabular}
 \end{table}
 
+% Figures — uncomment once PNGs are in figures/ directory
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figures/belief_simplex.png}
+  \caption{Ground-truth belief states (left) vs beliefs predicted from the
+    residual stream via Ridge regression (right), projected onto the 2-simplex.
+    Colors indicate component identity.}
+  \label{fig:simplex}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figures/pred2_layer_metrics.png}
+  \caption{Belief $R^2$, component classification accuracy, and silhouette score
+    across layers. $R^2$ increases while silhouette remains near zero.}
+  \label{fig:layers}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figures/per_layer_pca.png}
+  \caption{PCA at the last context position for each layer. Components overlap
+    throughout, confirming the shared-subspace geometry.}
+  \label{fig:pca}
+\end{figure}
+
 % ------------------------------------------------------------------
 \section{Additional Analysis}
 
