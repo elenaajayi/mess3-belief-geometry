@@ -122,6 +122,61 @@
 \section{Additional Analysis}
 
 % YOUR WRITING HERE
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figures/patching.png}
+  \caption{Activation patching: KL divergence from original and toward target
+    component. Patching the belief subspace does not shift predictions
+    (KL$\approx 0$), consistent with shared geometry.}
+  \label{fig:patching}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figures/mlp_vs_attn_decomposition.png}
+  \caption{Belief $R^2$ from MLP vs attention outputs at each layer.
+    MLPs consistently carry more belief information; attention $R^2$
+    decreases with depth.}
+  \label{fig:mlp_attn}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figures/bayes_optimal_comparison.png}
+  \caption{Per-position cross-entropy: model vs Bayes-optimal oracle.
+    The model slightly outperforms the oracle (gap $= -0.039$) by
+    implicitly averaging over components.}
+  \label{fig:bayes}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figures/cross_component_transfer.png}
+  \caption{Cross-component transfer probe $R^2$ matrix. High diagonal
+    ($\bar{R}^2 = 0.96$) but poor off-diagonal transfer, indicating
+    functionally component-specific representations despite shared geometry.}
+  \label{fig:transfer}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figures/ood_generalization.png}
+  \caption{Out-of-distribution generalization to unseen $\alpha=0.6$.
+    In-distribution probe achieves $R^2 = 0.886$ on OOD data,
+    suggesting the model learned belief update structure.}
+  \label{fig:ood}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figures/ood_belief_simplex.png}
+  \caption{Belief simplex projection for OOD component ($\alpha=0.6$),
+    showing the model's internal representations generalize to unseen
+    transition dynamics.}
+  \label{fig:ood_simplex}
+\end{figure}
+
 %
 % Subsection: Activation Patching
 %   KL(original || patched) = 0.0000 (std=0.0000)
