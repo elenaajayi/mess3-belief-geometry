@@ -1,0 +1,400 @@
+% Non-Ergodic Mess3: Belief State Geometry with Multiple Components
+% SPAR Midterm Report
+% To compile: latexmk -pdf report.tex
+
+\documentclass[midterm]{sparreport}
+
+% ============================================================================
+% METADATA
+% ============================================================================
+\title{Non-Ergodic Mess3: Belief State Geometry with Multiple Components}
+
+\author{
+  \textbf{Elena Ajayi}\\
+  \texttt{elenaajayi@example.com}
+  % \and
+  % \textbf{Mentor Name}\\
+  % \texttt{mentor@example.org}
+}
+
+\sparround{Spring 2025}
+
+% ============================================================================
+% DOCUMENT
+% ============================================================================
+\begin{document}
+
+\maketitle
+
+% ============================================================================
+% ABSTRACT
+% ============================================================================
+\begin{abstract}
+Prior work has shown that transformers trained on Hidden Markov Model sequences
+linearly encode Bayesian belief states in their residual streams. However, all
+existing Mess3 studies examine single-component (ergodic) processes. Natural
+language is non-ergodic: different authors, genres, and registers produce
+sequences with different statistical properties, and the generating regime is
+never labeled. I train a small transformer on a non-ergodic mixture of three
+Mess3 components (alpha = 0.4, 0.7, 0.9), where each sequence is generated
+entirely by one component. I make five pre-registered predictions about the
+resulting geometry, test them, and perform activation patching to probe
+causality. The model achieves strong belief tracking ($R^2 = 0.85$) through a
+shared low-dimensional subspace, but does not geometrically separate components
+--- suggesting a more parsimonious solution than predicted.
+\end{abstract}
+
+\keywords{mechanistic interpretability \and belief state geometry \and
+  hidden Markov models \and non-ergodic mixtures \and in-context learning}
+
+% ============================================================================
+% INTRODUCTION
+% ============================================================================
+\section{Introduction}
+
+% TODO: Write 100-350 words covering:
+% - Transformers trained on HMMs encode belief states geometrically (cite Shai et al.)
+% - Gap: all prior Mess3 work uses single ergodic components
+% - Natural language is non-ergodic (different registers, topics, authors)
+% - Research question: what geometry emerges when the model must simultaneously
+%   infer component identity AND track within-component beliefs?
+% - What success looks like: interpretable geometric structure that reveals
+%   how transformers handle latent regime switching
+
+Transformers trained on next-token prediction over Hidden Markov Model sequences
+have been shown to linearly encode Bayesian belief states in their residual
+streams \cite{shai2024}. Subsequent work characterized the geometric structures
+that arise from constrained belief updates \cite{constrainedbelief2025} and
+demonstrated that transformers learn factored representations when multiple
+latent factors are active simultaneously \cite{factoredrepresentations2025}.
+
+However, all existing Mess3 studies examine single-component (ergodic) processes.
+This leaves a gap: natural language is non-ergodic. Different authors, genres,
+registers, and topics produce sequences with different statistical properties,
+but the identity of the generating ``component'' is never labeled. A language
+model trained on a mixture of Wikipedia, code, and dialogue faces the same
+computational problem as a transformer trained on a non-ergodic HMM mixture: it
+must simultaneously infer which regime generated the current sequence and track
+the belief state within that regime.
+
+I construct a non-ergodic training set from three Mess3 components with different
+alpha parameters (0.4, 0.7, 0.9), where each sequence is generated entirely by
+one component. I make five pre-registered predictions about the resulting
+activation geometry, train a small transformer, and test each prediction. I also
+perform activation patching to test whether identified geometric structure is
+causally used for prediction.
+
+% ============================================================================
+% METHODOLOGY
+% ============================================================================
+\section{Methodology}
+
+\subsection{Mess3 Process}
+
+% TODO: Brief description of Mess3 (1-2 sentences), transition tensor,
+% alpha parameter meaning. Cite epsilon-transformers.
+
+A Mess3 process is a 3-state edge-emitting HMM with vocabulary $\{0, 1, 2\}$,
+parameterized by $(\alpha, x)$ \cite{epsilontransformers}. The transition tensor
+$T[\text{emit}, \text{from}, \text{to}]$ gives the joint probability of emitting
+a token and transitioning states. The parameter $\alpha$ controls state
+persistence: at $\alpha = 0.9$, sequences are highly predictable; at $\alpha =
+0.4$, transitions approach uniform.
+
+\subsection{Non-Ergodic Dataset}
+
+% TODO: 3 components, alpha values, x=0.1, each sequence from one component,
+% uniform sampling, component label hidden from model.
+
+I construct a non-ergodic mixture of three Mess3 components with $\alpha \in
+\{0.4, 0.7, 0.9\}$ and shared $x = 0.1$. Each training sequence (length 16) is
+generated entirely by one component, sampled uniformly. The component identity is
+never provided to the model.
+
+\subsection{Transformer Architecture}
+
+% TODO: 3 layers, 2 heads, d_model=64, d_ff=256, 152K params, BOS token,
+% causal attention, pre-norm, activation hooks.
+
+I use a GPT-2 style decoder-only transformer with pre-norm: 3 layers, 2
+attention heads, $d_\text{model} = 64$, $d_\text{ff} = 256$ (152K parameters).
+The vocabulary includes tokens $\{0, 1, 2\}$ plus a BOS token. I extract
+residual stream activations at every layer via hooks.
+
+\subsection{Training}
+
+% TODO: 15K steps, Adam, cosine schedule, lr=1e-3, batch=64, checkpoints
+% every 1K steps.
+
+Training runs for 15,000 steps with Adam ($\text{lr} = 10^{-3}$), cosine
+annealing schedule, batch size 64, and gradient clipping at 1.0. I save
+checkpoints every 1,000 steps for training dynamics analysis.
+
+\subsection{Analysis Methods}
+
+% TODO: Briefly list the analysis tools:
+% - Linear probes (Ridge regression) for belief R^2
+% - Logistic regression for component classification
+% - PCA for dimensionality and visualization
+% - Silhouette score for component separation
+% - Principal angles for subspace overlap
+% - Activation patching for causal testing
+
+I use Ridge regression to measure belief tracking ($R^2$), logistic regression
+for component classification accuracy, PCA for dimensionality analysis,
+silhouette scores for component separation, principal angles (via SVD) for
+subspace overlap, and activation patching for causal intervention.
+
+% ============================================================================
+% PRE-REGISTERED PREDICTIONS
+% ============================================================================
+\section{Pre-Registered Predictions}
+
+I derived five predictions from four papers \cite{shai2024,
+constrainedbelief2025, factoredrepresentations2025, riechers2025}, identifying
+where their findings disagree or leave gaps when extended to non-ergodic
+multi-component settings.
+
+% TODO: For each prediction, write 2-3 sentences: what you predict, why
+% (which paper's finding you're extending/contradicting), what evidence
+% would confirm or refute it.
+
+\textbf{Prediction 1 --- Shared subspace, not orthogonal.}
+\cite{factoredrepresentations2025} found orthogonal subspaces for simultaneously
+active factors. Since only one component is active per sequence, I predict the
+model reuses the same low-dimensional subspace for all components, encoding
+component identity as an offset rather than a rotation into separate subspaces.
+Evidence: effective dimensionality $\approx 3$, high subspace overlap between
+per-component PCA bases.
+
+\textbf{Prediction 2 --- Both jobs compound across layers.} Each layer performs
+belief approximation (attention) and nonlinear correction (MLP)
+\cite{constrainedbelief2025}. I predict both component identification and
+within-component belief tracking improve monotonically across layers.
+
+\textbf{Prediction 3 --- Gradual context separation.} As more tokens are
+observed, statistical evidence for component identity accumulates. I predict
+components separate gradually in the geometry, consistent with
+\cite{riechers2025}.
+
+\textbf{Prediction 4 --- Sharp training transition.} The geometry should remain
+disorganized until induction heads form \cite{olsson2022}, then component
+separation appears abruptly as a phase transition.
+
+\textbf{Prediction 5 --- Final layer sufficient.} Unlike RRXOR, Mess3 has no
+structural degeneracy where multiple belief states map to identical predictions.
+The final layer alone should suffice for belief recovery ($R^2$ gap $< 0.05$).
+
+\textbf{Mathematical reasoning.} The ground-truth belief update is $\eta' =
+\eta \cdot T[\text{token}] / Z$, which is piecewise-linear on the simplex.
+The optimal predictor must compute a posterior over both hidden state (3 values)
+and component identity (3 values). Because the component is fixed within a
+sequence, this posterior narrows with context, predicting a dimensionality
+reduction from early to late positions.
+
+% ============================================================================
+% RESULTS
+% ============================================================================
+\section{Preliminary Results}
+
+\subsection{Training}
+
+% TODO: Final loss, training time, loss curve shape.
+
+The model converges to a final loss of 0.994, well below uniform entropy
+($\ln 3 \approx 1.099$), indicating meaningful next-token prediction. Training
+took approximately 10 minutes on a T4 GPU. The loss curve shows steady
+improvement without a sharp phase transition.
+
+\subsection{Prediction 1 --- Shared Subspace (Confirmed)}
+
+% TODO: Effective dimensionality, subspace overlap values, interpretation.
+
+The effective dimensionality (95\% variance) is 6, with the top 5 PCs explaining
+94.5\% of variance. Subspace overlap between per-component PCA bases is very
+high: $\alpha\!=\!0.4$ vs $\alpha\!=\!0.7$: 0.992; $\alpha\!=\!0.4$ vs
+$\alpha\!=\!0.9$: 0.967; $\alpha\!=\!0.7$ vs $\alpha\!=\!0.9$: 0.990.
+\textbf{Confirmed:} components share a subspace rather than occupying orthogonal
+ones. The model found that a single geometric arrangement serves all three
+components.
+
+\subsection{Prediction 2 --- Compounding Across Layers (Partially Confirmed)}
+
+% TODO: Table of R^2, accuracy, silhouette per layer. Interpretation.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Metrics by layer. Belief $R^2$ increases; component separation does not.}
+  \label{tab:layers}
+  \begin{tabular}{lccc}
+    \toprule
+    Layer & Belief $R^2$ & Component Acc & Silhouette \\
+    \midrule
+    emb     & 0.643 & 0.333 & $-$0.007 \\
+    layer 0 & 0.810 & 0.455 & $-$0.019 \\
+    layer 1 & 0.847 & 0.519 & $+$0.009 \\
+    layer 2 & 0.840 & 0.527 & $-$0.008 \\
+    ln\_f   & 0.842 & 0.523 & $-$0.042 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Belief $R^2$ increases from 0.64 (embedding) to 0.85 (layer 1+), confirming that
+layers compound for belief tracking. However, silhouette scores remain near zero
+throughout, and component classification barely exceeds chance (52\% vs 33\%
+baseline). \textbf{Partially confirmed:} belief tracking improves across layers,
+but component separation does not.
+
+\subsection{Prediction 3 --- Gradual Context Separation (Refuted)}
+
+% TODO: Silhouette vs position, interpretation.
+
+Silhouette scores are negative at every context position ($-$0.22 at position 0,
+stabilizing around $-$0.03 for positions 1--15). There is no gradual increase in
+component separation with context. \textbf{Refuted:} the model does not
+geometrically separate components at any context length.
+
+\subsection{Prediction 4 --- Sharp Training Transition (Refuted)}
+
+% TODO: Silhouette and R^2 vs training step, interpretation.
+
+Silhouette scores remain near $-$0.04 throughout training (step 1 through
+15,000) with no sharp jump. Belief $R^2$ rises early (0.75 at step 1 to 0.83 by
+step 1,000) and then plateaus. \textbf{Refuted:} no phase transition in
+geometric organization is observed.
+
+\subsection{Prediction 5 --- Final Layer Sufficient (Confirmed)}
+
+Final layer $R^2 = 0.849$; all-layers-concatenated $R^2 = 0.853$; gap $= 0.005$.
+\textbf{Confirmed:} the final layer captures the belief geometry without needing
+earlier layers.
+
+\subsection{Summary}
+
+\begin{table}[htbp]
+  \centering
+  \caption{Summary of pre-registered predictions.}
+  \label{tab:summary}
+  \begin{tabular}{llc}
+    \toprule
+    Prediction & Key Metric & Confirmed? \\
+    \midrule
+    1. Shared subspace      & Overlap 0.97--0.99       & Yes \\
+    2. Compounding layers   & $R^2$ increases, sil.\ does not & Partial \\
+    3. Gradual separation   & Sil.\ $\approx -$0.03 everywhere & No \\
+    4. Sharp transition     & No jump in sil.\ vs step & No \\
+    5. Final layer sufficient & Gap $= 0.005$          & Yes \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+% ============================================================================
+% ADDITIONAL ANALYSES
+% ============================================================================
+\section{Additional Analyses}
+
+\subsection{Activation Patching}
+
+% TODO: Motivation, method, results, interpretation.
+
+I chose activation patching because all prior Mess3 studies demonstrated belief
+geometry via linear probes, which are correlational. Activation patching tests
+whether the identified subspace is \emph{causally} involved in generating
+predictions: I replace the 3D belief-subspace projection of a component A
+sequence's activation with that from component B and measure KL divergence.
+
+\textbf{Result:} KL(original $\|$ patched) $= 0.000$. The patching produced no
+change in predictions. This is consistent with the silhouette results: because
+components occupy the same subspace with no geometric offset, swapping one
+belief-subspace projection for another within the shared space produces a
+nearly identical vector. The belief geometry is present (high $R^2$) but the
+model's predictions are not sensitive to perturbations along the specific 3D
+subspace identified by Ridge regression. The causal information may be
+distributed across more dimensions, or the model may route predictions through
+mechanisms that the linear probe does not capture.
+
+\subsection{MLP vs Attention Decomposition}
+
+% TODO: Motivation, results, interpretation.
+
+I decompose each layer's residual stream update into attention and MLP
+contributions, extending \cite{constrainedbelief2025} from single-component
+to multi-component Mess3.
+
+\textbf{Result:} MLP outputs consistently achieve higher belief $R^2$ than
+attention outputs at every layer (MLP: 0.74--0.79; attention: 0.38--0.68).
+Neither sub-layer achieves meaningful component separation (silhouette $\approx
+0$). This suggests that in the multi-component setting, the MLP carries the
+dominant share of belief tracking, while attention's role may be more about
+aggregating positional context than encoding beliefs directly.
+
+% ============================================================================
+% CHALLENGES & OPEN QUESTIONS
+% ============================================================================
+\section{Challenges \& Open Questions}
+
+% TODO: Write 100-300 words. Suggestions:
+% - Why no component separation? Is this a feature or a limitation?
+% - The model found a more parsimonious solution than predicted
+% - Activation patching null: is the causal info in more dimensions?
+% - Would more separated alphas produce different results?
+
+The central unexpected finding is the absence of component separation despite
+strong belief tracking. The model appears to have found a more parsimonious
+solution than I predicted: rather than maintaining separate geometric
+representations for each component, it uses a single shared subspace where
+different alpha values produce different \emph{trajectories} through the same
+geometry. The belief state itself implicitly encodes enough component information
+for next-token prediction without requiring an explicit component-identity signal.
+
+This raises the question of whether more widely separated components (e.g.,
+$\alpha \in \{0.1, 0.5, 0.9\}$) or components with different $x$ parameters
+would force geometric separation, or whether the shared-subspace solution is
+always preferred when components share the same alphabet and state space.
+
+The activation patching null result also merits further investigation. The 3D
+subspace from Ridge SVD may be too low-dimensional to capture the model's actual
+computational pathway. A natural follow-up would be patching along progressively
+larger subspaces (top 10, 20, 30 PCs) to find the dimensionality at which
+patching begins to shift predictions.
+
+% ============================================================================
+% NEXT STEPS
+% ============================================================================
+\section{Next Steps}
+
+% TODO: Write 150-400 words on what you'd do next. Suggestions:
+% - Repeat with more separated alphas or different x values
+% - Full residual stream patching as a control
+% - Higher-dimensional subspace patching
+% - Out-of-distribution sequences (alpha=0.6, never seen in training)
+% - Larger models or longer sequences
+% - Connect findings to natural language non-ergodicity
+
+If continuing this work, I would pursue three directions:
+
+\textbf{1. Varying component distinguishability.} Repeat the experiment with
+more separated alpha values ($\{0.1, 0.5, 0.9\}$) and with components that
+differ in $x$ as well as $\alpha$. This would test whether geometric separation
+emerges when components are more statistically distinct, or whether the
+shared-subspace solution is a general strategy.
+
+\textbf{2. Out-of-distribution generalization.} Feed the trained model sequences
+from an unseen component ($\alpha = 0.6$). If the shared subspace truly encodes
+belief dynamics rather than memorized component-specific patterns, the model
+should generalize --- producing belief trajectories that interpolate between
+the trained components.
+
+\textbf{3. Higher-dimensional patching.} Patch along the top 10, 20, and 30
+principal components of the activation space (rather than the 3D Ridge subspace)
+to find the dimensionality threshold at which causal effects appear. This would
+clarify whether the null patching result reflects a genuinely distributed
+encoding or an artifact of the subspace selection method.
+
+% ============================================================================
+% BIBLIOGRAPHY
+% ============================================================================
+\bibliographystyle{plain}
+\bibliography{references}
+
+\end{document}
