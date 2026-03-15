@@ -122,14 +122,37 @@
 \section{Additional Analysis}
 
 % YOUR WRITING HERE
+%
+% Subsection: Activation Patching
 % Activation patching numbers:
 %   KL(original || patched) = 0.000
 %   KL(patched || target_B) = 0.190
+%   Interpretation: patching the belief subspace from component A to B
+%   does not change model output, consistent with shared geometry
 %
+% Subsection: MLP vs Attention Decomposition
 % MLP vs attention decomposition numbers:
 %   Layer 0: attn R2=0.682, mlp R2=0.795
 %   Layer 1: attn R2=0.455, mlp R2=0.781
 %   Layer 2: attn R2=0.381, mlp R2=0.742
+%   Key finding: MLPs carry more belief info than attention at every layer
+%
+% Subsection: Bayes-Optimal Baseline (motivated by P2)
+%   Compares model per-position CE to oracle CE (Bayesian observer with known component)
+%   Shows how close the model gets to theoretical ceiling
+%   Metrics: per-position CE gap (model - oracle), overall gap curve
+%
+% Subsection: Cross-Component Transfer Probes (motivated by P1)
+%   Train Ridge probe on alpha_i sequences only, test on alpha_j
+%   Produces 3x3 R2 transfer matrix
+%   If shared subspace is real, off-diagonal R2 should be close to diagonal
+%   Metrics: 3x3 R2 matrix, mean off-diagonal vs diagonal R2
+%
+% Subsection: OOD Generalization alpha=0.6 (motivated by P1+P2)
+%   Generate sequences from unseen alpha=0.6, extract activations
+%   Test in-distribution probe on OOD data
+%   Metrics: OOD R2 vs in-distribution R2, PCA overlay, simplex projection
+%   Tests whether model learned the belief update rule vs memorized 3 alphas
 
 % ------------------------------------------------------------------
 \section{What I Would Do Next}
