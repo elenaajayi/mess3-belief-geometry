@@ -1,6 +1,6 @@
 # Non-Ergodic Mess3: Belief State Geometry
 
-Work test. Trains a small transformer on a non-ergodic mixture of three Mess3 components (alpha = 0.4, 0.7, 0.9) and probes the residual stream for belief state geometry.
+This a repository that is for a Work test. Trains a small transformer on a non-ergodic mixture of three Mess3 components (alpha = 0.4, 0.7, 0.9) and probes the residual stream for belief state geometry.
 
 ## What's here
 
@@ -11,4 +11,4 @@ Work test. Trains a small transformer on a non-ergodic mixture of three Mess3 co
 
 ## Quick start
 
-Open the notebook in Colab and run all cells. Training takes ~12 minutes on a T4.
+Open the notebook in Colab and run all cells. 
