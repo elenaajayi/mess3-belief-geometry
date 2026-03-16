@@ -4,10 +4,10 @@ This a repository that is for a Work test. Trains a small transformer on a non-e
 
 ## What's here
 
-- `MATS_ELENA_SIMPLEX.ipynb` — main experiment notebook (runs on Colab with GPU)
-- `report.pdf` — writeup
-- `figures/` — result plots
-- `results/` — raw PNGs from Colab
+- `MATS_ELENA_SIMPLEX.ipynb` - main experiment notebook (runs on Colab with GPU)
+- `report.pdf` - writeup
+- `figures/` - result plots
+- `results/` - raw PNGs from Colab
 
 ## Quick start
 
