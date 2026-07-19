@@ -1,0 +1,9 @@
+# Python 3.12+
+# Direct dependencies used by MATS_ELENA_SIMPLEX.ipynb
+matplotlib
+numpy
+scikit-learn
+torch
+
+# Local notebook interface
+jupyterlab
