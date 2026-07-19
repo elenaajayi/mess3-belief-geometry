@@ -92,10 +92,10 @@
   \end{tabular}
 \end{table}
 
-% Figures — uncomment once PNGs are in figures/ directory
+% Figures are stored in the repository's figures/ directory.
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{figures/belief_simplex.png}
+  \includegraphics[width=0.9\textwidth]{../../figures/belief_simplex.png}
   \caption{Ground-truth belief states (left) vs beliefs predicted from the
     residual stream via Ridge regression (right), projected onto the 2-simplex.
     Colors indicate component identity.}
@@ -104,7 +104,7 @@
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{figures/pred2_layer_metrics.png}
+  \includegraphics[width=0.9\textwidth]{../../figures/pred2_layer_metrics.png}
   \caption{Belief $R^2$, component classification accuracy, and silhouette score
     across layers. $R^2$ increases while silhouette remains near zero.}
   \label{fig:layers}
@@ -112,7 +112,7 @@
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{figures/per_layer_pca.png}
+  \includegraphics[width=0.9\textwidth]{../../figures/per_layer_pca.png}
   \caption{PCA at the last context position for each layer. Components overlap
     throughout, confirming the shared-subspace geometry.}
   \label{fig:pca}
@@ -125,7 +125,7 @@
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{figures/patching.png}
+  \includegraphics[width=0.9\textwidth]{../../figures/patching.png}
   \caption{Activation patching: KL divergence from original and toward target
     component. Patching the belief subspace does not shift predictions
     (KL$\approx 0$), consistent with shared geometry.}
@@ -134,7 +134,7 @@
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{figures/mlp_vs_attn_decomposition.png}
+  \includegraphics[width=0.9\textwidth]{../../figures/mlp_vs_attn_decomposition.png}
   \caption{Belief $R^2$ from MLP vs attention outputs at each layer.
     MLPs consistently carry more belief information; attention $R^2$
     decreases with depth.}
@@ -143,7 +143,7 @@
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{figures/bayes_optimal_comparison.png}
+  \includegraphics[width=0.9\textwidth]{../../figures/bayes_optimal_comparison.png}
   \caption{Per-position cross-entropy: model vs Bayes-optimal oracle.
     The model slightly outperforms the oracle (gap $= -0.039$) by
     implicitly averaging over components.}
@@ -152,7 +152,7 @@
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{figures/cross_component_transfer.png}
+  \includegraphics[width=0.9\textwidth]{../../figures/cross_component_transfer.png}
   \caption{Cross-component transfer probe $R^2$ matrix. High diagonal
     ($\bar{R}^2 = 0.96$) but poor off-diagonal transfer, indicating
     functionally component-specific representations despite shared geometry.}
@@ -161,7 +161,7 @@
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{figures/ood_generalization.png}
+  \includegraphics[width=0.9\textwidth]{../../figures/ood_generalization.png}
   \caption{Out-of-distribution generalization to unseen $\alpha=0.6$.
     In-distribution probe achieves $R^2 = 0.886$ on OOD data,
     suggesting the model learned belief update structure.}
@@ -170,7 +170,7 @@
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{figures/ood_belief_simplex.png}
+  \includegraphics[width=0.9\textwidth]{../../figures/ood_belief_simplex.png}
   \caption{Belief simplex projection for OOD component ($\alpha=0.6$),
     showing the model's internal representations generalize to unseen
     transition dynamics.}

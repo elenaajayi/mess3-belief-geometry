@@ -5,9 +5,8 @@ This a repository that is for a Work test. I train a small transformer on a non-
 ## What's here
 
 - `MATS_ELENA_SIMPLEX.ipynb` - main experiment notebook (runs on Colab with GPU)
-- `report.pdf` - writeup
-- `figures/` - result plots
-- `results/` - raw PNGs from Colab
+- `paper/report.pdf` - final writeup
+- `figures/` - generated result plots
 
 ## Quick start
 
